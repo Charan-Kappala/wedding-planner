@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM node:20-bookworm-slim AS builder
 
 WORKDIR /app
 
@@ -15,12 +15,17 @@ RUN npx prisma generate
 # Build TypeScript
 RUN npm run build
 
+
 # ─── Production image ─────────────────────────────────────────────────────────
-FROM node:20-alpine AS runner
+FROM node:20-bookworm-slim AS runner
 
 WORKDIR /app
-
 ENV NODE_ENV=production
+
+# Install OpenSSL for Prisma (required on Render)
+RUN apt-get update \
+    && apt-get install -y openssl ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
 
 # Only copy production deps
 COPY package*.json ./
