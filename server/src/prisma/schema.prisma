@@ -1,0 +1,141 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String        @id @default(uuid())
+  email        String        @unique
+  password     String
+  wedding      Wedding?
+  refreshTokens RefreshToken[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model RefreshToken {
+  id        String   @id @default(uuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+model Wedding {
+  id           String    @id @default(uuid())
+  userId       String    @unique
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date         DateTime?
+  venueName    String?
+  venueAddress String?
+  budget       Float     @default(0)
+  partner1Name String?
+  partner2Name String?
+  guests       Guest[]
+  vendors      Vendor[]
+  tasks        Task[]
+  expenses     Expense[]
+  tables       Table[]
+  moodImages   MoodImage[]
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Guest {
+  id           String   @id @default(uuid())
+  weddingId    String
+  wedding      Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  firstName    String
+  lastName     String
+  email        String?
+  phone        String?
+  rsvpStatus   String   @default("PENDING")
+  dietaryNeeds String?
+  plusOne      Boolean  @default(false)
+  tableId      String?
+  table        Table?   @relation(fields: [tableId], references: [id])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Vendor {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  category  String
+  contact   String?
+  price     Float?
+  status    String   @default("INQUIRY")
+  notes     String?
+  files     File[]
+  expenses  Expense[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Task {
+  id        String    @id @default(uuid())
+  weddingId String
+  wedding   Wedding   @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  title     String
+  dueDate   DateTime?
+  completed Boolean   @default(false)
+  category  String?
+  assignee  String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model Expense {
+  id          String   @id @default(uuid())
+  weddingId   String
+  wedding     Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  category    String
+  description String
+  estimated   Float    @default(0)
+  actual      Float?
+  vendorId    String?
+  vendor      Vendor?  @relation(fields: [vendorId], references: [id])
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Table {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  name      String
+  capacity  Int      @default(8)
+  guests    Guest[]
+  posX      Float    @default(0)
+  posY      Float    @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model File {
+  id        String   @id @default(uuid())
+  vendorId  String?
+  vendor    Vendor?  @relation(fields: [vendorId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String
+  mimeType  String
+  createdAt DateTime @default(now())
+}
+
+model MoodImage {
+  id        String   @id @default(uuid())
+  weddingId String
+  wedding   Wedding  @relation(fields: [weddingId], references: [id], onDelete: Cascade)
+  url       String
+  filename  String?
+  tag       String?
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now())
+}

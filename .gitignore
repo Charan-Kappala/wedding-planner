@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+*.tsbuildinfo
+
+# Environment variables — NEVER commit these
+.env
+.env.local
+.env.production
+.env.*.local
+server/.env
+
+# Uploads (local dev only — use S3/R2 in prod)
+server/uploads/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+
+# Editor
+.vscode/settings.json
+.idea/
+*.suo
+*.sw?
+.DS_Store
+Thumbs.db
+
+# Prisma migrations (keep these — they're safe to commit)
+# !server/src/prisma/migrations/
+
+# Test coverage
+coverage/

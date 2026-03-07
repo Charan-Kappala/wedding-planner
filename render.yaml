@@ -1,0 +1,35 @@
+# Render Blueprint — deploy the API as a Web Service
+# https://render.com/docs/blueprint-spec
+#
+# Usage:
+#   1. Push this repo to GitHub
+#   2. Go to render.com → New → Blueprint → connect your repo
+#   3. Set the secret env vars in the Render dashboard (DATABASE_URL, JWT_SECRET, etc.)
+
+services:
+  - type: web
+    name: wedding-planner-api
+    runtime: docker
+    rootDir: server
+    dockerfilePath: ./Dockerfile
+    plan: free
+    region: oregon
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 4000
+
+      # ── Set these manually in the Render dashboard ──
+      # DATABASE_URL   → your Supabase connection string (Transaction mode pooler)
+      # JWT_SECRET     → openssl rand -base64 32
+      # JWT_REFRESH_SECRET → openssl rand -base64 32
+      # CLIENT_URL     → https://your-app.vercel.app
+
+    healthCheckPath: /health
+
+    disk:
+      name: uploads
+      mountPath: /app/uploads
+      sizeGB: 1

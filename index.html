@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Wedding Planner</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; box-sizing: border-box; }
+    body {
+      background: #F2F2F7;
+      font-family: -apple-system, 'SF Pro Text', 'SF Pro Display', BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+      max-width: 430px;
+      margin: 0 auto;
+      min-height: 100vh;
+      position: relative;
+      overflow-x: hidden;
+    }
+    .ios-card {
+      background: #fff;
+      border-radius: 16px;
+      overflow: hidden;
+    }
+    .ios-list-item {
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      background: #fff;
+      border-bottom: 0.5px solid #E5E5EA;
+      cursor: pointer;
+      transition: background 0.1s;
+    }
+    .ios-list-item:last-child { border-bottom: none; }
+    .ios-list-item:active { background: #F2F2F7; }
+    .tab-bar {
+      position: fixed;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-top: 0.5px solid #C6C6C8;
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+      z-index: 100;
+    }
+    .nav-bar {
+      position: fixed;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 100%;
+      max-width: 430px;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 0.5px solid #C6C6C8;
+      z-index: 100;
+    }
+    .content-scroll {
+      padding-top: 108px;
+      padding-bottom: 100px;
+      min-height: 100vh;
+    }
+    .tab-btn { background: none; border: none; cursor: pointer; }
+    .tab-btn.active svg { color: #FF6B9D; }
+    .tab-btn.active span { color: #FF6B9D; }
+    .tab-btn svg { color: #8E8E93; }
+    .tab-btn span { color: #8E8E93; font-size: 10px; display: block; margin-top: 2px; }
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+    .progress-bar-track { background: #E5E5EA; border-radius: 4px; height: 6px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s ease; }
+    .checkbox-custom {
+      width: 22px; height: 22px; border-radius: 11px;
+      border: 2px solid #C6C6C8; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .checkbox-custom.checked { background: #FF6B9D; border-color: #FF6B9D; }
+    .rsvp-badge {
+      font-size: 12px; font-weight: 600; padding: 3px 10px;
+      border-radius: 20px; flex-shrink: 0;
+    }
+    .rsvp-confirmed { background: #D1F0E0; color: #1A8040; }
+    .rsvp-pending   { background: #FFF0D1; color: #A06010; }
+    .rsvp-declined  { background: #FFE0E0; color: #A01010; }
+    .section-header {
+      font-size: 13px; font-weight: 600; color: #8E8E93;
+      text-transform: uppercase; letter-spacing: 0.4px;
+      padding: 16px 20px 6px;
+    }
+    input[type="checkbox"] { display: none; }
+    .fab {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(calc(215px - 72px));
+      width: 56px; height: 56px;
+      background: #FF6B9D;
+      border-radius: 28px;
+      box-shadow: 0 4px 16px rgba(255,107,157,0.45);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; z-index: 99;
+      border: none;
+      transition: box-shadow 0.15s;
+    }
+    .fab:active { box-shadow: 0 2px 8px rgba(255,107,157,0.4); transform: translateX(calc(215px - 72px)) scale(0.94); }
+    .countdown-ring { position: relative; display: inline-flex; align-items: center; justify-content: center; }
+    .tag-pill {
+      font-size: 11px; font-weight: 600; padding: 2px 8px;
+      border-radius: 20px; background: #FFE4EF; color: #FF6B9D;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav Bar -->
+  <div class="nav-bar">
+    <div style="height:44px; display:flex; align-items:center; justify-content:center; padding:0 16px; position:relative;">
+      <span style="font-size:17px; font-weight:600; color:#000;">My Wedding</span>
+      <span style="position:absolute; right:16px; font-size:15px; color:#FF6B9D; font-weight:500; cursor:pointer;">Edit</span>
+    </div>
+    <!-- Tab pills -->
+    <div style="display:flex; gap:0; padding:0 16px 10px; overflow-x:auto; scrollbar-width:none;" id="segTabs">
+      <div onclick="switchTab('home',this)" style="flex-shrink:0; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:500; cursor:pointer; background:#FF6B9D; color:#fff; margin-right:8px;" class="seg-active">Home</div>
+      <div onclick="switchTab('checklist',this)" style="flex-shrink:0; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:500; cursor:pointer; background:#F2F2F7; color:#555; margin-right:8px;">Checklist</div>
+      <div onclick="switchTab('budget',this)" style="flex-shrink:0; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:500; cursor:pointer; background:#F2F2F7; color:#555; margin-right:8px;">Budget</div>
+      <div onclick="switchTab('guests',this)" style="flex-shrink:0; padding:6px 16px; border-radius:20px; font-size:14px; font-weight:500; cursor:pointer; background:#F2F2F7; color:#555;">Guests</div>
+    </div>
+  </div>
+
+  <!-- ======================== HOME TAB ======================== -->
+  <div id="tab-home" class="tab-content active content-scroll">
+    <div style="padding:0 16px;">
+
+      <!-- Countdown Hero Card -->
+      <div class="ios-card" style="background: linear-gradient(135deg, #FF6B9D 0%, #FF8FB3 50%, #FFB3CC 100%); padding:24px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+          <div>
+            <div style="font-size:13px; color:rgba(255,255,255,0.8); font-weight:500; margin-bottom:4px;">YOUR BIG DAY</div>
+            <div style="font-size:28px; font-weight:700; color:#fff; line-height:1.1;">June 14, 2026</div>
+            <div style="font-size:14px; color:rgba(255,255,255,0.85); margin-top:4px;">Saturday · Rose Garden Venue</div>
+          </div>
+          <div style="text-align:center; background:rgba(255,255,255,0.22); border-radius:16px; padding:12px 18px;">
+            <div style="font-size:38px; font-weight:700; color:#fff; line-height:1;">100</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.85); font-weight:500;">days left</div>
+          </div>
+        </div>
+        <div style="margin-top:20px; display:flex; gap:16px;">
+          <div style="flex:1; background:rgba(255,255,255,0.2); border-radius:12px; padding:10px 12px;">
+            <div style="font-size:22px; font-weight:700; color:#fff;">68%</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.8);">Tasks done</div>
+            <div style="margin-top:6px; background:rgba(255,255,255,0.25); border-radius:4px; height:4px;">
+              <div style="width:68%; height:100%; background:#fff; border-radius:4px;"></div>
+            </div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.2); border-radius:12px; padding:10px 12px;">
+            <div style="font-size:22px; font-weight:700; color:#fff;">$21.4k</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.8);">of $32k spent</div>
+            <div style="margin-top:6px; background:rgba(255,255,255,0.25); border-radius:4px; height:4px;">
+              <div style="width:67%; height:100%; background:#fff; border-radius:4px;"></div>
+            </div>
+          </div>
+          <div style="flex:1; background:rgba(255,255,255,0.2); border-radius:12px; padding:10px 12px;">
+            <div style="font-size:22px; font-weight:700; color:#fff;">87</div>
+            <div style="font-size:12px; color:rgba(255,255,255,0.8);">Guests RSVP'd</div>
+            <div style="margin-top:6px; background:rgba(255,255,255,0.25); border-radius:4px; height:4px;">
+              <div style="width:72%; height:100%; background:#fff; border-radius:4px;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Urgent Tasks -->
+      <div class="section-header">Needs Attention</div>
+      <div class="ios-card" style="margin-bottom:16px;">
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#FFF0D1; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">💒</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500; color:#000;">Confirm ceremony timeline</div>
+            <div style="font-size:13px; color:#8E8E93; margin-top:1px;">Venue · Due in 5 days</div>
+          </div>
+          <div style="font-size:12px; color:#FF3B30; font-weight:600; background:#FFE5E5; padding:3px 8px; border-radius:8px;">Urgent</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#FFE4EF; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">💐</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500; color:#000;">Final floral arrangements</div>
+            <div style="font-size:13px; color:#8E8E93; margin-top:1px;">Flowers · Due in 12 days</div>
+          </div>
+          <div style="font-size:12px; color:#FF9500; font-weight:600; background:#FFF0D1; padding:3px 8px; border-radius:8px;">Soon</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#E4F0FF; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">📸</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500; color:#000;">Send shot list to photographer</div>
+            <div style="font-size:13px; color:#8E8E93; margin-top:1px;">Photography · Due in 20 days</div>
+          </div>
+          <div style="font-size:12px; color:#007AFF; font-weight:600; background:#E4F0FF; padding:3px 8px; border-radius:8px;">Pending</div>
+        </div>
+      </div>
+
+      <!-- Vendors -->
+      <div class="section-header">Vendors Booked</div>
+      <div class="ios-card" style="margin-bottom:16px;">
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#E4F0FF; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">📸</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Luminary Photography</div>
+            <div style="font-size:13px; color:#8E8E93;">Photography</div>
+          </div>
+          <div style="font-size:13px; color:#34C759; font-weight:600;">Confirmed</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#F0E4FF; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">🎵</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">The Velvet Band</div>
+            <div style="font-size:13px; color:#8E8E93;">Live Music</div>
+          </div>
+          <div style="font-size:13px; color:#34C759; font-weight:600;">Confirmed</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#FFF4E4; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">🍰</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Sweet Elegance Bakery</div>
+            <div style="font-size:13px; color:#8E8E93;">Wedding Cake</div>
+          </div>
+          <div style="font-size:13px; color:#FF9500; font-weight:600;">Deposit paid</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:36px; height:36px; border-radius:10px; background:#E4FFE9; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:18px;">🌸</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Bloom & Co. Florals</div>
+            <div style="font-size:13px; color:#8E8E93;">Flowers & Decor</div>
+          </div>
+          <div style="font-size:13px; color:#34C759; font-weight:600;">Confirmed</div>
+        </div>
+      </div>
+
+      <!-- Inspiration -->
+      <div class="section-header">Inspiration</div>
+      <div style="display:flex; gap:8px; margin-bottom:24px; overflow-x:auto; padding-bottom:4px; scrollbar-width:none;">
+        <div style="flex-shrink:0; width:140px; height:140px; border-radius:14px; background:linear-gradient(135deg,#FFD6E7,#FFF0F7); display:flex; align-items:center; justify-content:center; font-size:48px;">💍</div>
+        <div style="flex-shrink:0; width:140px; height:140px; border-radius:14px; background:linear-gradient(135deg,#E7F6FF,#F0F9FF); display:flex; align-items:center; justify-content:center; font-size:48px;">🌹</div>
+        <div style="flex-shrink:0; width:140px; height:140px; border-radius:14px; background:linear-gradient(135deg,#F5FFE7,#EDFFF0); display:flex; align-items:center; justify-content:center; font-size:48px;">🕊️</div>
+        <div style="flex-shrink:0; width:140px; height:140px; border-radius:14px; background:linear-gradient(135deg,#FFF4E7,#FFFAEE); display:flex; align-items:center; justify-content:center; font-size:48px;">🕯️</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== CHECKLIST TAB ======================== -->
+  <div id="tab-checklist" class="tab-content content-scroll">
+    <div style="padding:0 16px;">
+
+      <!-- Progress summary -->
+      <div class="ios-card" style="padding:16px; margin-bottom:16px; display:flex; align-items:center; gap:16px;">
+        <div style="position:relative; width:64px; height:64px; flex-shrink:0;">
+          <svg width="64" height="64" viewBox="0 0 64 64">
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#F2F2F7" stroke-width="6"/>
+            <circle cx="32" cy="32" r="28" fill="none" stroke="#FF6B9D" stroke-width="6"
+              stroke-dasharray="175.9" stroke-dashoffset="56.3" stroke-linecap="round"
+              transform="rotate(-90 32 32)"/>
+          </svg>
+          <div style="position:absolute; inset:0; display:flex; align-items:center; justify-content:center; font-size:14px; font-weight:700; color:#FF6B9D;">68%</div>
+        </div>
+        <div>
+          <div style="font-size:17px; font-weight:600;">22 of 32 tasks done</div>
+          <div style="font-size:14px; color:#8E8E93; margin-top:2px;">10 remaining · 100 days left</div>
+        </div>
+      </div>
+
+      <!-- Category: Venue -->
+      <div class="section-header">Venue</div>
+      <div class="ios-card" style="margin-bottom:16px;" id="venue-list">
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Book venue deposit</div>
+          <div class="tag-pill">Done</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Sign venue contract</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Confirm ceremony timeline</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Arrange parking & transport</div>
+        </div>
+      </div>
+
+      <!-- Category: Catering -->
+      <div class="section-header">Catering</div>
+      <div class="ios-card" style="margin-bottom:16px;">
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Choose catering company</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Finalize menu</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Confirm dietary requirements</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Pay final catering balance</div>
+        </div>
+      </div>
+
+      <!-- Category: Photography -->
+      <div class="section-header">Photography & Video</div>
+      <div class="ios-card" style="margin-bottom:16px;">
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Book photographer</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Book videographer</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Send shot list to photographer</div>
+        </div>
+      </div>
+
+      <!-- Category: Attire -->
+      <div class="section-header">Attire</div>
+      <div class="ios-card" style="margin-bottom:16px;">
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Purchase wedding dress</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">First dress fitting</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Final dress fitting</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Groom's suit / attire</div>
+        </div>
+      </div>
+
+      <!-- Category: Flowers -->
+      <div class="section-header">Flowers & Decor</div>
+      <div class="ios-card" style="margin-bottom:24px;">
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Book florist</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom checked">✓</div>
+          <div style="flex:1; font-size:15px; color:#8E8E93; text-decoration:line-through;">Choose flower palette</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Final floral arrangements</div>
+        </div>
+        <div class="ios-list-item" style="gap:12px;" onclick="toggleCheck(this)">
+          <div class="checkbox-custom"></div>
+          <div style="flex:1; font-size:15px; color:#000;">Confirm delivery & setup</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== BUDGET TAB ======================== -->
+  <div id="tab-budget" class="tab-content content-scroll">
+    <div style="padding:0 16px;">
+
+      <!-- Budget hero -->
+      <div class="ios-card" style="padding:20px; margin-bottom:16px; text-align:center;">
+        <div style="font-size:13px; color:#8E8E93; font-weight:500; text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px;">Total Budget</div>
+        <div style="font-size:40px; font-weight:700; color:#000; line-height:1;">$32,000</div>
+        <div style="display:flex; justify-content:center; gap:32px; margin-top:16px;">
+          <div>
+            <div style="font-size:20px; font-weight:600; color:#FF6B9D;">$21,400</div>
+            <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Spent</div>
+          </div>
+          <div style="width:1px; background:#E5E5EA;"></div>
+          <div>
+            <div style="font-size:20px; font-weight:600; color:#34C759;">$10,600</div>
+            <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Remaining</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <div class="progress-bar-track">
+            <div class="progress-bar-fill" style="width:66.9%; background: linear-gradient(90deg,#FF6B9D,#FF8FB3);"></div>
+          </div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:4px; text-align:right;">66.9% used</div>
+        </div>
+      </div>
+
+      <!-- Budget breakdown -->
+      <div class="section-header">Breakdown</div>
+      <div class="ios-card" style="margin-bottom:24px;">
+
+        <!-- Venue -->
+        <div style="padding:14px 16px; border-bottom:0.5px solid #E5E5EA;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#FFE4EF; display:flex; align-items:center; justify-content:center;">💒</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Venue</div>
+                <div style="font-size:12px; color:#8E8E93;">$7,500 of $8,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#FF6B9D;">$7,500</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:93.75%; background:#FF6B9D;"></div></div>
+        </div>
+
+        <!-- Catering -->
+        <div style="padding:14px 16px; border-bottom:0.5px solid #E5E5EA;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#FFF4E4; display:flex; align-items:center; justify-content:center;">🍽️</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Catering</div>
+                <div style="font-size:12px; color:#8E8E93;">$5,800 of $7,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#FF9500;">$5,800</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:82.9%; background:#FF9500;"></div></div>
+        </div>
+
+        <!-- Photography -->
+        <div style="padding:14px 16px; border-bottom:0.5px solid #E5E5EA;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#E4F0FF; display:flex; align-items:center; justify-content:center;">📸</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Photography</div>
+                <div style="font-size:12px; color:#8E8E93;">$3,200 of $4,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#007AFF;">$3,200</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:80%; background:#007AFF;"></div></div>
+        </div>
+
+        <!-- Flowers -->
+        <div style="padding:14px 16px; border-bottom:0.5px solid #E5E5EA;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#E4FFE9; display:flex; align-items:center; justify-content:center;">🌸</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Flowers & Decor</div>
+                <div style="font-size:12px; color:#8E8E93;">$2,400 of $3,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#34C759;">$2,400</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:80%; background:#34C759;"></div></div>
+        </div>
+
+        <!-- Attire -->
+        <div style="padding:14px 16px; border-bottom:0.5px solid #E5E5EA;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#F0E4FF; display:flex; align-items:center; justify-content:center;">👗</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Attire</div>
+                <div style="font-size:12px; color:#8E8E93;">$1,900 of $3,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#AF52DE;">$1,900</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:63.3%; background:#AF52DE;"></div></div>
+        </div>
+
+        <!-- Music -->
+        <div style="padding:14px 16px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+            <div style="display:flex; align-items:center; gap:10px;">
+              <div style="width:32px; height:32px; border-radius:8px; background:#FFE4EF; display:flex; align-items:center; justify-content:center;">🎵</div>
+              <div>
+                <div style="font-size:15px; font-weight:500;">Music</div>
+                <div style="font-size:12px; color:#8E8E93;">$600 of $2,000</div>
+              </div>
+            </div>
+            <div style="font-size:15px; font-weight:600; color:#FF6B9D;">$600</div>
+          </div>
+          <div class="progress-bar-track"><div class="progress-bar-fill" style="width:30%; background:#FF6B9D;"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ======================== GUESTS TAB ======================== -->
+  <div id="tab-guests" class="tab-content content-scroll">
+    <div style="padding:0 16px;">
+
+      <!-- RSVP Summary -->
+      <div style="display:flex; gap:10px; margin-bottom:16px;">
+        <div class="ios-card" style="flex:1; padding:14px; text-align:center;">
+          <div style="font-size:26px; font-weight:700; color:#34C759;">87</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Confirmed</div>
+        </div>
+        <div class="ios-card" style="flex:1; padding:14px; text-align:center;">
+          <div style="font-size:26px; font-weight:700; color:#FF9500;">18</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Pending</div>
+        </div>
+        <div class="ios-card" style="flex:1; padding:14px; text-align:center;">
+          <div style="font-size:26px; font-weight:700; color:#FF3B30;">7</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Declined</div>
+        </div>
+        <div class="ios-card" style="flex:1; padding:14px; text-align:center;">
+          <div style="font-size:26px; font-weight:700; color:#000;">112</div>
+          <div style="font-size:12px; color:#8E8E93; margin-top:2px;">Total</div>
+        </div>
+      </div>
+
+      <!-- Guest capacity bar -->
+      <div class="ios-card" style="padding:14px 16px; margin-bottom:16px;">
+        <div style="display:flex; justify-content:space-between; margin-bottom:8px;">
+          <span style="font-size:14px; font-weight:500;">Venue Capacity</span>
+          <span style="font-size:14px; color:#8E8E93;">112 / 150 seats</span>
+        </div>
+        <div class="progress-bar-track">
+          <div class="progress-bar-fill" style="width:74.7%; background:linear-gradient(90deg,#34C759,#30D158);"></div>
+        </div>
+      </div>
+
+      <!-- Guest list -->
+      <div class="section-header">Guest List</div>
+      <div class="ios-card" style="margin-bottom:24px;">
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#FF6B9D,#FF8FB3); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">JD</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">James & Diana Walsh</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 1 · 2 guests</div>
+          </div>
+          <span class="rsvp-badge rsvp-confirmed">Confirmed</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#007AFF,#34AADC); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">SM</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Sarah Mitchell</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 2 · 1 guest</div>
+          </div>
+          <span class="rsvp-badge rsvp-confirmed">Confirmed</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#AF52DE,#BF5AF2); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">RP</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Robert & Priya Patel</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 3 · 3 guests</div>
+          </div>
+          <span class="rsvp-badge rsvp-confirmed">Confirmed</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#FF9500,#FFCC00); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">KC</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Kevin Chen</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 4 · 1 guest</div>
+          </div>
+          <span class="rsvp-badge rsvp-pending">Pending</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#34C759,#30D158); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">AL</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Amanda & Luis Torres</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 2 · 2 guests</div>
+          </div>
+          <span class="rsvp-badge rsvp-confirmed">Confirmed</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#FF3B30,#FF6961); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">BH</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Barbara Hughes</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 5 · 1 guest</div>
+          </div>
+          <span class="rsvp-badge rsvp-declined">Declined</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#5AC8FA,#32ADE6); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">MN</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Mark & Nina Kowalski</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 6 · 4 guests</div>
+          </div>
+          <span class="rsvp-badge rsvp-pending">Pending</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#FF6B9D,#D450A0); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">EG</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">Eleanor Grant</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 1 · 1 guest</div>
+          </div>
+          <span class="rsvp-badge rsvp-confirmed">Confirmed</span>
+        </div>
+
+        <div class="ios-list-item" style="gap:12px;">
+          <div style="width:38px; height:38px; border-radius:19px; background:linear-gradient(135deg,#FFCC00,#FF9500); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:600; color:#fff; flex-shrink:0;">DS</div>
+          <div style="flex:1;">
+            <div style="font-size:15px; font-weight:500;">David & Susan Park</div>
+            <div style="font-size:13px; color:#8E8E93;">Table 7 · 2 guests</div>
+          </div>
+          <span class="rsvp-badge rsvp-pending">Pending</span>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- FAB -->
+  <button class="fab" onclick="alert('Add new item!')">
+    <svg width="24" height="24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round">
+      <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+    </svg>
+  </button>
+
+  <!-- Tab Bar -->
+  <div class="tab-bar">
+    <div style="display:flex; justify-content:space-around; padding:8px 0 4px;">
+
+      <button class="tab-btn active" onclick="switchTab('home', null, this)" id="tb-home">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="margin:0 auto;"><path d="M3 9.75L12 3l9 6.75V21a1 1 0 01-1 1H4a1 1 0 01-1-1V9.75z"/><path d="M9 22V12h6v10"/></svg>
+        <span>Home</span>
+      </button>
+
+      <button class="tab-btn" onclick="switchTab('checklist', null, this)" id="tb-checklist">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="margin:0 auto;"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M7 9h10M7 13h7M7 17h5"/></svg>
+        <span>Checklist</span>
+      </button>
+
+      <button class="tab-btn" onclick="switchTab('budget', null, this)" id="tb-budget">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="margin:0 auto;"><circle cx="12" cy="12" r="9"/><path d="M12 7v1m0 8v1m-3.5-5.5C8.5 10.7 10 9.5 12 9.5c1.5 0 2.5.8 2.5 1.8 0 2.4-5 1.8-5 4.2 0 1.2 1.1 2 2.5 2 2 0 3.5-1.3 3.5-3"/></svg>
+        <span>Budget</span>
+      </button>
+
+      <button class="tab-btn" onclick="switchTab('guests', null, this)" id="tb-guests">
+        <svg width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" style="margin:0 auto;"><circle cx="9" cy="7" r="3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><circle cx="17" cy="9" r="2.5"/><path d="M15.5 20c0-2.5 1.6-4.5 3.5-4.5"/></svg>
+        <span>Guests</span>
+      </button>
+
+    </div>
+  </div>
+
+  <script>
+    const tabs = ['home','checklist','budget','guests'];
+    const segButtons = document.querySelectorAll('#segTabs > div');
+
+    function switchTab(tab, segBtn, tabBtn) {
+      // hide all
+      tabs.forEach(t => document.getElementById('tab-' + t).classList.remove('active'));
+      // show selected
+      document.getElementById('tab-' + tab).classList.add('active');
+
+      // update seg pills
+      segButtons.forEach(b => { b.style.background = '#F2F2F7'; b.style.color = '#555'; });
+      if (segBtn) { segBtn.style.background = '#FF6B9D'; segBtn.style.color = '#fff'; }
+      else {
+        const idx = tabs.indexOf(tab);
+        segButtons[idx].style.background = '#FF6B9D';
+        segButtons[idx].style.color = '#fff';
+      }
+
+      // update tab bar
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      if (tabBtn) tabBtn.classList.add('active');
+      else document.getElementById('tb-' + tab).classList.add('active');
+    }
+
+    function toggleCheck(row) {
+      const box = row.querySelector('.checkbox-custom');
+      const label = row.querySelector('[style*="font-size:15px"]');
+      if (!label) return;
+      const isChecked = box.classList.contains('checked');
+      if (isChecked) {
+        box.classList.remove('checked');
+        box.textContent = '';
+        label.style.color = '#000';
+        label.style.textDecoration = 'none';
+        const pill = row.querySelector('.tag-pill');
+        if (pill) pill.remove();
+      } else {
+        box.classList.add('checked');
+        box.textContent = '✓';
+        label.style.color = '#8E8E93';
+        label.style.textDecoration = 'line-through';
+      }
+    }
+  </script>
+</body>
+</html>
