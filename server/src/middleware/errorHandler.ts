@@ -44,5 +44,6 @@ export function errorHandler(
   }
 
   console.error('[Unhandled Error]', err);
-  res.status(500).json({ success: false, error: 'An unexpected error occurred.' });
+  const message = err instanceof Error ? err.message : String(err);
+  res.status(500).json({ success: false, error: message });
 }
