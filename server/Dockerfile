@@ -33,10 +33,14 @@ RUN npm ci --omit=dev
 
 # Copy built output + prisma client
 COPY --from=builder /app/dist ./dist
-COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
-COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
-COPY src/prisma/schema.prisma ./src/prisma/schema.prisma
 
+# Prisma engines + client
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/.prisma/client ./node_modules/.prisma/client
+COPY --from=builder /app/node_modules/@prisma ./node_modules/@prisma
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
+
+COPY src/prisma/schema.prisma ./src/prisma/schema.prisma
 # Create uploads directory
 RUN mkdir -p uploads/contracts uploads/mood
 
