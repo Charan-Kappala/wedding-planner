@@ -28,8 +28,8 @@ services:
       # CLIENT_URL     → https://your-app.vercel.app
 
     healthCheckPath: /health
-
-    disk:
-      name: uploads
-      mountPath: /app/uploads
-      sizeGB: 1
+    # NOTE: Persistent disk requires a paid plan. On the free tier, uploaded
+    # files (vendor contracts, inspiration images) are stored in the container's
+    # ephemeral filesystem and will be lost on redeploy. For production use,
+    # swap server/src/routes/vendors.ts and mood.ts to write to Supabase Storage
+    # or Cloudflare R2 instead of the local /uploads directory.
