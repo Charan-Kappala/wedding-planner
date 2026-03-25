@@ -18,7 +18,7 @@ const PORTFOLIO = [
     offset: '',
   },
   {
-    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB6Du0pI-MUOvbCwSkTg0sZ3nli3VIjRaRo_JssSP9SUkQjhKVJO7P5yowAV5OOKZY29_1SRhzvTlUXG5YXNaKwiUVTo1JPOZ0spjaL3WiUJoTIJz7goEXd58laLyxx9Rqopq5Q1dHW-6X_yF4m6TuSIFII_OevL4wD6xn1TgaYkkKAcUvMfJiVxgPBYhxbsBJPIXLOUgB0G_8JaXe0yEyGgpXPguDB9V4mg_K_FMKvtW23fhITpqpZ7ifiDSsX6c81F_f80dQy_s',
+    src: 'https://lh3.googleusercontent.com/aida-public/AB6AXuB6Du0pI-MUOvbCwSkTg0sZ3nli3VIjRaRo_JssSP9SUkQjhKVJO7P5yowAV5OOKZY29_1SRhzvTlUXG5YXNaKwiUVTo1JPOZ0spjaL3WiUPJoTIJz7goEXd58laLyxx9Rqopq5Q1dHW-6X_yF4m6TuSIFII_OevL4wD6xn1TgaYkkKAcUvMfJiVxgPBYhxbsBJPIXLOUgB0G_8JaXe0yEyGgpXPguDB9V4mg_K_FMKvtW23fhITpqpZ7ifiDSsX6c81F_f80dQy_s',
     alt: 'Desert bohemian wedding',
     location: 'Joshua Tree',
     couple: 'Sloane & Marcus',
