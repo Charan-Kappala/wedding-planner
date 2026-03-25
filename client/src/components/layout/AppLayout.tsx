@@ -16,19 +16,19 @@ export function AppLayout() {
   }, [fetchWedding]);
 
   return (
-    <div className="flex h-screen bg-cream overflow-hidden">
+    <div className="flex h-screen bg-surface overflow-hidden">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
       {/* Main content area */}
       <div className="flex flex-1 flex-col min-w-0 overflow-hidden">
         <TopBar onMenuClick={() => setSidebarOpen(true)} />
         <main
-          className="flex-1 overflow-y-auto"
+          className="flex-1 overflow-y-auto bg-surface-container-low"
           id="main-content"
           tabIndex={-1}
           aria-label="Main content"
         >
-          <div className="p-4 sm:p-6 lg:p-8 max-w-7xl mx-auto">
+          <div className="p-8 sm:p-10 lg:p-16 max-w-screen-xl mx-auto">
             <Outlet />
           </div>
         </main>

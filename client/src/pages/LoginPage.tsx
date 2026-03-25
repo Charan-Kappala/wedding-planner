@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-import { Heart } from 'lucide-react';
 import { useAuthStore } from '../store/authStore';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
@@ -37,24 +36,60 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen bg-cream flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-blush-100 mb-4">
-            <Heart className="h-8 w-8 text-blush-400 fill-blush-300" />
-          </div>
-          <h1 className="font-heading text-4xl font-semibold text-charcoal">Wedding Planner</h1>
-          <p className="mt-1 text-sm text-gray-500">Your perfect day, beautifully organized.</p>
+    <div className="min-h-screen flex">
+      {/* Left — editorial brand panel */}
+      <div className="hidden lg:flex lg:w-1/2 bg-[#1c1810] flex-col justify-between p-16 relative overflow-hidden">
+        {/* Subtle texture overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-[#2a2010]/80 to-[#0e0c08]/80" />
+
+        <div className="relative z-10">
+          <span className="font-label text-[10px] uppercase tracking-[0.25rem] text-[#f8d056]/60">
+            Wedding Atelier
+          </span>
+          <h1 className="font-headline italic text-5xl text-[#fff8f0] mt-4 leading-tight">
+            Vows &amp; Plans
+          </h1>
         </div>
 
-        {/* Card */}
-        <div className="card">
-          <h2 className="font-heading text-2xl font-semibold text-charcoal mb-6">Welcome back</h2>
+        <div className="relative z-10">
+          <div className="h-px w-12 bg-[#f8d056]/40 mb-8" />
+          <p className="font-headline italic text-2xl text-[#fff8f0]/80 leading-relaxed max-w-xs">
+            "Every great love story deserves an equally beautiful chapter of planning."
+          </p>
+          <p className="font-label text-[10px] uppercase tracking-widest text-[#f8d056]/50 mt-6">
+            — The Atelier
+          </p>
+        </div>
 
-          <form onSubmit={handleSubmit} noValidate className="space-y-4">
+        <div className="relative z-10">
+          <p className="font-label text-[10px] uppercase tracking-[0.15rem] text-[#fff8f0]/30">
+            © {new Date().getFullYear()} Vows &amp; Plans
+          </p>
+        </div>
+      </div>
+
+      {/* Right — form panel */}
+      <div className="w-full lg:w-1/2 bg-surface flex items-center justify-center p-8 sm:p-16">
+        <div className="w-full max-w-sm">
+          {/* Mobile brand */}
+          <div className="lg:hidden mb-12">
+            <h1 className="font-headline italic text-4xl text-on-surface">Vows &amp; Plans</h1>
+            <span className="font-label text-[10px] uppercase tracking-[0.2rem] text-on-surface-variant">
+              Wedding Atelier
+            </span>
+          </div>
+
+          <span className="font-label text-[10px] uppercase tracking-[0.2rem] text-primary block mb-3">
+            Welcome back
+          </span>
+          <h2 className="font-headline text-4xl text-on-surface mb-12">
+            Sign in to your<br />
+            <span className="italic">planning suite</span>
+          </h2>
+
+          <form onSubmit={handleSubmit} noValidate className="space-y-8">
             <Input
-              label="Email"
+              label="Email address"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -73,26 +108,32 @@ export default function LoginPage() {
               autoComplete="current-password"
             />
 
-            <Button type="submit" loading={isLoading} className="w-full mt-2">
-              Sign in
+            <Button type="submit" loading={isLoading} className="w-full mt-4">
+              Continue
             </Button>
           </form>
 
-          <p className="mt-5 text-center text-sm text-gray-500">
-            Don't have an account?{' '}
+          <div className="mt-10 flex items-center gap-4">
+            <div className="flex-1 h-px bg-outline-variant/30" />
+            <span className="font-label text-[10px] uppercase tracking-[0.15rem] text-on-surface-variant">
+              New here?
+            </span>
+            <div className="flex-1 h-px bg-outline-variant/30" />
+          </div>
+
+          <p className="mt-6 text-center">
             <Link
               to="/register"
-              className="font-semibold text-blush-400 hover:text-blush-500 underline underline-offset-2"
+              className="font-label text-xs uppercase tracking-[0.1rem] text-primary border-b border-primary/40 pb-0.5 hover:border-primary transition-colors"
             >
-              Create one
+              Create an account
             </Link>
           </p>
-        </div>
 
-        {/* Demo hint */}
-        <p className="mt-4 text-center text-xs text-gray-400">
-          Demo: demo@weddingplanner.com / password123
-        </p>
+          <p className="mt-8 text-center font-label text-[10px] uppercase tracking-[0.1rem] text-on-surface-variant/50">
+            Demo: demo@weddingplanner.com / password123
+          </p>
+        </div>
       </div>
     </div>
   );

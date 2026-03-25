@@ -1,6 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  Heart,
   LayoutDashboard,
   Users,
   DollarSign,
@@ -38,16 +37,16 @@ function NavItem({ to, label, icon: Icon, onClick }: (typeof NAV_ITEMS)[0] & { o
       onClick={onClick}
       aria-label={label}
       className={({ isActive }) =>
-        `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150
+        `flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-label font-semibold tracking-[0.08rem] uppercase transition-all duration-200
         ${isActive
-          ? 'bg-blush-50 text-blush-500 font-semibold'
-          : 'text-gray-500 hover:bg-blush-50 hover:text-blush-400'
+          ? 'bg-surface-container-low text-primary'
+          : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
         }`
       }
     >
       {({ isActive }) => (
         <>
-          <Icon className={`h-5 w-5 flex-shrink-0 ${isActive ? 'text-blush-400' : 'text-gray-400'}`} />
+          <Icon className={`h-4 w-4 flex-shrink-0 ${isActive ? 'text-primary' : 'text-on-surface-variant'}`} />
           {label}
         </>
       )}
@@ -70,72 +69,84 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       {/* Mobile overlay */}
       {open && (
         <div
-          className="fixed inset-0 z-30 bg-charcoal/40 backdrop-blur-sm lg:hidden"
+          className="fixed inset-0 z-30 bg-on-surface/30 backdrop-blur-sm lg:hidden"
           onClick={onClose}
           aria-hidden="true"
         />
       )}
 
-      {/* Sidebar panel */}
       <aside
         className={`
-          fixed top-0 left-0 z-40 h-full w-64 bg-white shadow-warm-lg
-          flex flex-col
+          fixed top-0 left-0 z-40 h-full w-64 bg-surface-container-lowest editorial-shadow
+          flex flex-col border-r border-outline-variant/15
           transition-transform duration-300 ease-in-out
           ${open ? 'translate-x-0' : '-translate-x-full'}
-          lg:translate-x-0 lg:static lg:shadow-none lg:border-r lg:border-blush-100
+          lg:translate-x-0 lg:static lg:shadow-none
         `}
         aria-label="Main navigation"
       >
         {/* Logo */}
-        <div className="flex items-center justify-between px-6 py-5 border-b border-blush-100">
-          <div className="flex items-center gap-2">
-            <Heart className="h-6 w-6 text-blush-400 fill-blush-300" />
-            <span className="font-heading text-xl font-semibold text-charcoal">Vows & Plans</span>
+        <div className="flex items-center justify-between px-6 py-6">
+          <div className="flex flex-col gap-0.5">
+            <span className="font-headline italic text-xl tracking-tighter text-on-surface">
+              Vows &amp; Plans
+            </span>
+            <span className="font-label text-[9px] uppercase tracking-[0.15rem] text-on-surface-variant">
+              Wedding Atelier
+            </span>
           </div>
           <button
             onClick={onClose}
-            className="lg:hidden btn-ghost p-1 rounded-full"
+            className="lg:hidden p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
             aria-label="Close navigation"
           >
-            <X className="h-5 w-5" />
+            <X className="h-4 w-4" />
           </button>
         </div>
 
+        {/* Divider */}
+        <div className="mx-6 h-px bg-outline-variant/20" />
+
         {/* Nav links */}
-        <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
+        <nav className="flex-1 overflow-y-auto px-3 py-5 space-y-0.5">
           {NAV_ITEMS.map((item) => (
             <NavItem key={item.to} {...item} onClick={onClose} />
           ))}
         </nav>
 
         {/* Bottom section */}
-        <div className="border-t border-blush-100 px-3 py-4 space-y-1">
+        <div className="mx-6 h-px bg-outline-variant/20" />
+        <div className="px-3 py-4 space-y-0.5">
           <NavLink
             to="/settings"
             onClick={onClose}
             className={({ isActive }) =>
-              `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-colors duration-150
-              ${isActive ? 'bg-blush-50 text-blush-500' : 'text-gray-500 hover:bg-blush-50 hover:text-blush-400'}`
+              `flex items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-label font-semibold tracking-[0.08rem] uppercase transition-all duration-200
+              ${isActive
+                ? 'bg-surface-container-low text-primary'
+                : 'text-on-surface-variant hover:bg-surface-container-low hover:text-on-surface'
+              }`
             }
           >
-            <Settings className="h-5 w-5 text-gray-400" />
+            <Settings className="h-4 w-4" />
             Settings
           </NavLink>
 
           <button
             onClick={handleLogout}
-            className="flex w-full items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-500 hover:bg-red-50 hover:text-red-500 transition-colors duration-150"
+            className="flex w-full items-center gap-3 px-4 py-2.5 rounded-lg text-xs font-label font-semibold tracking-[0.08rem] uppercase text-on-surface-variant hover:bg-red-50 hover:text-error transition-all duration-200"
             aria-label="Sign out"
           >
-            <LogOut className="h-5 w-5" />
+            <LogOut className="h-4 w-4" />
             Sign out
           </button>
 
           {/* User pill */}
           {user && (
-            <div className="mt-2 px-3 py-2 rounded-xl bg-blush-50">
-              <p className="text-xs font-semibold text-blush-400 truncate">{user.email}</p>
+            <div className="mt-3 px-4 py-2.5 rounded-lg bg-surface-container-low">
+              <p className="text-[10px] font-label uppercase tracking-[0.1rem] text-on-surface-variant truncate">
+                {user.email}
+              </p>
             </div>
           )}
         </div>

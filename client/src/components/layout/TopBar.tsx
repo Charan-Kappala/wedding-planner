@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, User, Heart } from 'lucide-react';
+import { Menu, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useWeddingStore } from '../../store/weddingStore';
 
@@ -46,33 +46,32 @@ export function TopBar({ onMenuClick }: TopBarProps) {
       : 'Your Wedding';
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-white/95 backdrop-blur border-b border-blush-100 flex items-center px-4 gap-4">
+    <header className="sticky top-0 z-20 h-16 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/15 flex items-center px-6 gap-4">
       {/* Mobile hamburger */}
       <button
         onClick={onMenuClick}
-        className="lg:hidden btn-ghost p-1.5 rounded-full"
+        className="lg:hidden p-1.5 rounded-lg text-on-surface-variant hover:bg-surface-container-low transition-colors"
         aria-label="Open navigation menu"
       >
         <Menu className="h-5 w-5" />
       </button>
 
       {/* Wedding name */}
-      <div className="flex items-center gap-2 min-w-0">
-        <Heart className="h-4 w-4 text-blush-300 fill-blush-200 flex-shrink-0" />
-        <span className="font-heading text-lg font-semibold text-charcoal truncate">
+      <div className="flex items-center gap-3 min-w-0">
+        <span className="font-headline italic text-lg text-on-surface truncate">
           {weddingName}
         </span>
       </div>
 
       {/* Countdown badge */}
       {countdown !== null && (
-        <div className="hidden sm:flex items-center gap-1.5 rounded-full bg-champagne-300/20 border border-champagne-400/30 px-3 py-1">
-          <span className="text-xs font-semibold text-champagne-500">
+        <div className="hidden sm:flex items-center gap-1.5 gold-gradient rounded-full px-4 py-1.5 editorial-shadow">
+          <span className="text-[10px] font-label font-semibold text-on-primary tracking-widest uppercase">
             {countdown.days > 0
               ? `${countdown.days}d ${countdown.hours}h to go`
               : countdown.hours > 0
                 ? `${countdown.hours}h ${countdown.minutes}m to go`
-                : "It's today! 🎊"}
+                : "It's today!"}
           </span>
         </div>
       )}
@@ -81,10 +80,10 @@ export function TopBar({ onMenuClick }: TopBarProps) {
 
       {/* Avatar */}
       <div className="flex items-center gap-2" aria-label={`Signed in as ${user?.email}`}>
-        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blush-100 border border-blush-200">
-          <User className="h-4 w-4 text-blush-400" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-full bg-surface-container-high editorial-shadow">
+          <User className="h-4 w-4 text-on-surface-variant" />
         </div>
-        <span className="hidden md:block text-xs text-gray-500 max-w-[140px] truncate">
+        <span className="hidden md:block text-[10px] font-label uppercase tracking-[0.1rem] text-on-surface-variant max-w-[140px] truncate">
           {user?.email}
         </span>
       </div>
